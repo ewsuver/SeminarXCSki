@@ -175,174 +175,20 @@
 let currentEra = "ancient";
 let globeInstance;
 let locationElements = [];
+let locations = [];
 
-const locations = [
-  {
-    name: "Norway",
-    lat: 60.4720,
-    lng: 8.4689,
-    era: "ancient",
-    date: "1000-1200 AD",
-    info: "Origin of cross-country skiing. Used for survival and travel in snowy regions.",
-    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Sweden",
-    lat: 60.1282,
-    lng: 18.6435,
-    era: "medieval",
-    date: "1400-1700 AD",
-    info: "Skiing spread as a common winter transportation method.",
-    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Finland",
-    lat: 61.9241,
-    lng: 25.7482,
-    era: "medieval",
-    date: "1600-1900 AD",
-    info: "Used for long-distance travel and military movement in winter.",
-    image: "https://images.unsplash.com/photo-1521318898602-67e7d4f3b32d?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Russia",
-    lat: 61.5240,
-    lng: 105.3188,
-    era: "modern",
-    date: "1700-1950 AD",
-    info: "Ski troops used skiing for mobility in harsh winter conditions.",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
-  },
-  {
-    name: "United States",
-    lat: 37.0902,
-    lng: -95.7129,
-    era: "contemporary",
-    date: "1900-Present",
-    info: "Cross-country skiing became a competitive and Olympic sport.",
-    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Iceland",
-    lat: 64.9631,
-    lng: -19.0208,
-    era: "ancient",
-    date: "1100-1300 AD",
-    info: "Vikings used skiing for exploration and travel across snowy terrain.",
-    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Scotland",
-    lat: 56.4907,
-    lng: -4.2026,
-    era: "medieval",
-    date: "1500-1800 AD",
-    info: "Early adoption of skiing in Scottish Highlands for winter hunting.",
-    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Poland",
-    lat: 51.9194,
-    lng: 19.1451,
-    era: "medieval",
-    date: "1600-1850 AD",
-    info: "Skiing used for military campaigns and transport in winter.",
-    image: "https://images.unsplash.com/photo-1521318898602-67e7d4f3b32d?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Canada",
-    lat: 56.1304,
-    lng: -106.3468,
-    era: "modern",
-    date: "1800-1970 AD",
-    info: "Indigenous peoples and fur traders developed skiing techniques.",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Japan",
-    lat: 36.2048,
-    lng: 138.2529,
-    era: "modern",
-    date: "1850-1950 AD",
-    info: "Skiing introduced from Europe became popular in mountain regions.",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Austria",
-    lat: 47.5162,
-    lng: 14.5501,
-    era: "contemporary",
-    date: "1950-Present",
-    info: "Major hub for Olympic skiing and winter sports development.",
-    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Norway (North)",
-    lat: 69.6492,
-    lng: 18.9753,
-    era: "contemporary",
-    date: "1960-Present",
-    info: "Tromsø region hosts major Arctic skiing competitions.",
-    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Chile",
-    lat: -40.4168,
-    lng: -71.2171,
-    era: "contemporary",
-    date: "1950-Present",
-    info: "Patagonia skiing and winter sports in South America.",
-    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
-  },
-  {
-    name: "Kazakhstan",
-    lat: 48.0196,
-    lng: 66.9237,
-    era: "ancient",
-    date: "900-1100 AD",
-    info: "Nomadic tribes used skiing for hunting and migration.",
-    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
-  },
-  {
-    name: "China",
-    lat: 39.9042,
-    lng: 116.4074,
-    era: "medieval",
-    date: "1300-1700 AD",
-    info: "Ancient skiing practices in northern provinces for warfare.",
-    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
-  }
-];
-
-function filterByEra(era) {
-  currentEra = era;
-  
-  // Update button states
-  document.querySelectorAll('.era-btn').forEach(btn => {
-    btn.classList.remove('active');
+// Load locations from JSON
+fetch('locations.json')
+  .then(response => response.json())
+  .then(data => {
+    locations = data;
+    initializeGlobe();
   });
-  event.target.classList.add('active');
-  
-  updatePinVisibility();
-}
 
-const infoBox = document.getElementById("infoBox");
+function initializeGlobe() {
+  const infoBox = document.getElementById("infoBox");
 
-function updatePinVisibility() {
-  locationElements.forEach((el, index) => {
-    const location = locations[index];
-    const isVisible = currentEra === "all" || location.era === currentEra;
-    if (isVisible) {
-      el.style.visibility = "visible";
-      el.style.pointerEvents = "auto";
-    } else {
-      el.style.visibility = "hidden";
-      el.style.pointerEvents = "none";
-    }
-  });
-}
-
-globeInstance = Globe()(document.getElementById("globeViz"))
+  globeInstance = Globe()(document.getElementById("globeViz"))
   .globeImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
   .backgroundColor('#000000')
   .htmlElementsData(locations)
@@ -387,8 +233,40 @@ globeInstance = Globe()(document.getElementById("globeViz"))
     return el;
   });
 
-globeInstance.controls().autoRotate = false;
-globeInstance.controls().autoRotateSpeed = 0.5;
+  globeInstance.controls().autoRotate = false;
+  globeInstance.controls().autoRotateSpeed = 0.5;
+
+  // Initialize with ancient pins only
+  setTimeout(() => {
+    updatePinVisibility();
+  }, 100);
+}
+
+function filterByEra(era) {
+  currentEra = era;
+  
+  // Update button states
+  document.querySelectorAll('.era-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  updatePinVisibility();
+}
+
+function updatePinVisibility() {
+  locationElements.forEach((el, index) => {
+    const location = locations[index];
+    const isVisible = currentEra === "all" || location.era === currentEra;
+    if (isVisible) {
+      el.style.visibility = "visible";
+      el.style.pointerEvents = "auto";
+    } else {
+      el.style.visibility = "hidden";
+      el.style.pointerEvents = "none";
+    }
+  });
+}
 
 function closePopup() {
   document.getElementById("overlay").style.display = "none";
@@ -396,11 +274,6 @@ function closePopup() {
 }
 
 document.getElementById("overlay").onclick = closePopup;
-
-// Initialize with ancient pins only
-setTimeout(() => {
-  updatePinVisibility();
-}, 100);
 
 </script>
 
