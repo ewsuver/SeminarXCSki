@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>XC Skiing History Globe</title>
+  <script src="https://unpkg.com/globe.gl"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: black;
+    }
+
+    #globeViz {
+      width: 100vw;
+      height: calc(100vh - 120px);
+      z-index: 1;
+      position: relative;
+    }
+
+    h1 {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      z-index: 20;
+    }
+
+    #infoBox {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.97);
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    #infoBox .content {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    #infoBox .text-section {
+      flex: 1;
+      text-align: left;
+    }
+
+    #infoBox h2 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    #infoBox .meta {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    #infoBox p {
+      margin: 0 0 20px 0;
+      font-size: 15px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    #infoBox .image-section {
+      flex-shrink: 0;
+    }
+
+    #infoBox img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    #infoBox button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #infoBox button:hover {
+      background: #0056b3;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 50;
+    }
+
+    /* Era buttons */
+    #eraContainer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.9);
+      border-top: 2px solid #fff;
+      z-index: 8;
+      padding: 15px 20px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .era-btn {
+      padding: 8px 20px;
+      background: rgba(100, 150, 255, 0.3);
+      color: white;
+      border: 2px solid rgba(100, 150, 255, 0.6);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .era-btn:hover {
+      background: rgba(100, 150, 255, 0.5);
+      border-color: rgba(100, 150, 255, 1);
+    }
+
+    .era-btn.active {
+      background: rgba(100, 150, 255, 0.8);
+      border-color: #6496ff;
+      box-shadow: 0 0 10px rgba(100, 150, 255, 0.6);
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>History of Cross-Country Skiing</h1>
+
+<div id="globeViz"></div>
+<div id="infoBox"></div>
+<div id="overlay"></div>
+<div id="eraContainer">
+  <button class="era-btn active" onclick="filterByEra('ancient')">Ancient</button>
+  <button class="era-btn" onclick="filterByEra('medieval')">Medieval</button>
+  <button class="era-btn" onclick="filterByEra('modern')">Modern Era</button>
+  <button class="era-btn" onclick="filterByEra('contemporary')">Contemporary</button>
+  <button class="era-btn" onclick="filterByEra('all')">All Eras</button>
+</div>
+
+<script>
+
+
+// Era state
+let currentEra = "ancient";
+let globeInstance;
+let locationElements = [];
+
+const locations = [
+  {
+    name: "Norway",
+    lat: 60.4720,
+    lng: 8.4689,
+    era: "ancient",
+    date: "1000-1200 AD",
+    info: "Origin of cross-country skiing. Used for survival and travel in snowy regions.",
+    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Sweden",
+    lat: 60.1282,
+    lng: 18.6435,
+    era: "medieval",
+    date: "1400-1700 AD",
+    info: "Skiing spread as a common winter transportation method.",
+    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Finland",
+    lat: 61.9241,
+    lng: 25.7482,
+    era: "medieval",
+    date: "1600-1900 AD",
+    info: "Used for long-distance travel and military movement in winter.",
+    image: "https://images.unsplash.com/photo-1521318898602-67e7d4f3b32d?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Russia",
+    lat: 61.5240,
+    lng: 105.3188,
+    era: "modern",
+    date: "1700-1950 AD",
+    info: "Ski troops used skiing for mobility in harsh winter conditions.",
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
+  },
+  {
+    name: "United States",
+    lat: 37.0902,
+    lng: -95.7129,
+    era: "contemporary",
+    date: "1900-Present",
+    info: "Cross-country skiing became a competitive and Olympic sport.",
+    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Iceland",
+    lat: 64.9631,
+    lng: -19.0208,
+    era: "ancient",
+    date: "1100-1300 AD",
+    info: "Vikings used skiing for exploration and travel across snowy terrain.",
+    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Scotland",
+    lat: 56.4907,
+    lng: -4.2026,
+    era: "medieval",
+    date: "1500-1800 AD",
+    info: "Early adoption of skiing in Scottish Highlands for winter hunting.",
+    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Poland",
+    lat: 51.9194,
+    lng: 19.1451,
+    era: "medieval",
+    date: "1600-1850 AD",
+    info: "Skiing used for military campaigns and transport in winter.",
+    image: "https://images.unsplash.com/photo-1521318898602-67e7d4f3b32d?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Canada",
+    lat: 56.1304,
+    lng: -106.3468,
+    era: "modern",
+    date: "1800-1970 AD",
+    info: "Indigenous peoples and fur traders developed skiing techniques.",
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Japan",
+    lat: 36.2048,
+    lng: 138.2529,
+    era: "modern",
+    date: "1850-1950 AD",
+    info: "Skiing introduced from Europe became popular in mountain regions.",
+    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Austria",
+    lat: 47.5162,
+    lng: 14.5501,
+    era: "contemporary",
+    date: "1950-Present",
+    info: "Major hub for Olympic skiing and winter sports development.",
+    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Norway (North)",
+    lat: 69.6492,
+    lng: 18.9753,
+    era: "contemporary",
+    date: "1960-Present",
+    info: "Tromsø region hosts major Arctic skiing competitions.",
+    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Chile",
+    lat: -40.4168,
+    lng: -71.2171,
+    era: "contemporary",
+    date: "1950-Present",
+    info: "Patagonia skiing and winter sports in South America.",
+    image: "https://images.unsplash.com/photo-1516134305737-a9e8e01e4287?w=300&h=300&fit=crop"
+  },
+  {
+    name: "Kazakhstan",
+    lat: 48.0196,
+    lng: 66.9237,
+    era: "ancient",
+    date: "900-1100 AD",
+    info: "Nomadic tribes used skiing for hunting and migration.",
+    image: "https://images.unsplash.com/photo-1551541866-bafbe4c06ecc?w=300&h=300&fit=crop"
+  },
+  {
+    name: "China",
+    lat: 39.9042,
+    lng: 116.4074,
+    era: "medieval",
+    date: "1300-1700 AD",
+    info: "Ancient skiing practices in northern provinces for warfare.",
+    image: "https://images.unsplash.com/photo-1612897554315-8ae29e2dd55e?w=300&h=300&fit=crop"
+  }
+];
+
+function filterByEra(era) {
+  currentEra = era;
+  
+  // Update button states
+  document.querySelectorAll('.era-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  updatePinVisibility();
+}
+
+const infoBox = document.getElementById("infoBox");
+
+function updatePinVisibility() {
+  locationElements.forEach((el, index) => {
+    const location = locations[index];
+    const isVisible = currentEra === "all" || location.era === currentEra;
+    if (isVisible) {
+      el.style.visibility = "visible";
+      el.style.pointerEvents = "auto";
+    } else {
+      el.style.visibility = "hidden";
+      el.style.pointerEvents = "none";
+    }
+  });
+}
+
+globeInstance = Globe()(document.getElementById("globeViz"))
+  .globeImageUrl('//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+  .backgroundColor('#000000')
+  .htmlElementsData(locations)
+  .htmlLat(d => d.lat)
+  .htmlLng(d => d.lng)
+  .htmlElement(d => {
+    const el = document.createElement('img');
+
+    el.src = "ski.png";
+    el.style.width = "28px";
+    el.style.height = "28px";
+    el.style.cursor = "pointer";
+    el.style.transform = "translate(-50%, -50%)";
+    el.style.pointerEvents = "auto";
+
+    locationElements.push(el);
+
+    el.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      document.getElementById("overlay").style.display = "block";
+      infoBox.style.display = "block";
+
+      infoBox.innerHTML = `
+        <div class="content">
+          <div class="text-section">
+            <h2>${d.name}</h2>
+            <div class="meta">${d.date}</div>
+            <p>${d.info}</p>
+            <button onclick="closePopup()">Close</button>
+          </div>
+          <div class="image-section">
+            <img src="${d.image}" alt="${d.name}">
+          </div>
+        </div>
+      `;
+    });
+
+    el.onmouseenter = () => el.style.transform = "translate(-50%, -50%) scale(1.3)";
+    el.onmouseleave = () => el.style.transform = "translate(-50%, -50%) scale(1)";
+
+    return el;
+  });
+
+globeInstance.controls().autoRotate = false;
+globeInstance.controls().autoRotateSpeed = 0.5;
+
+function closePopup() {
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("infoBox").style.display = "none";
+}
+
+document.getElementById("overlay").onclick = closePopup;
+
+// Initialize with ancient pins only
+setTimeout(() => {
+  updatePinVisibility();
+}, 100);
+
+</script>
+
+</body>
+</html>
