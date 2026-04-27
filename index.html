@@ -35,19 +35,22 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(255,255,255,0.97);
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 90%;
+      padding: 36px;
+      border-radius: 14px;
+      max-width: 880px;
+      width: 95%;
+      max-height: 85vh;
+      overflow-y: auto;
       display: none;
       z-index: 100;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.45);
     }
 
     #infoBox .content {
       display: flex;
-      gap: 30px;
+      gap: 36px;
       align-items: flex-start;
+      flex-wrap: wrap;
     }
 
     #infoBox .text-section {
@@ -79,10 +82,17 @@
     }
 
     #infoBox img {
-      width: 150px;
-      height: 150px;
+      width: 220px;
+      height: 220px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 10px;
+    }
+
+    #infoBox .popup-actions {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
     }
 
     #infoBox button {
@@ -302,11 +312,13 @@ function initializeGlobe() {
             <h2>${d.name}</h2>
             <div class="meta">${d.date}</div>
             <p>${d.info}</p>
-            <button onclick="closePopup()">Close</button>
           </div>
           <div class="image-section">
             <img src="${d.image}" alt="${d.name}">
           </div>
+        </div>
+        <div class="popup-actions">
+          <button onclick="closePopup()">Close</button>
         </div>
       `;
     });
