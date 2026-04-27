@@ -4,7 +4,7 @@
     "lat": 60.4720,
     "lng": 8.4689,
     "era": "ancient",
-    "date": "1000-1200 AD",
+    "date": "1100 AD",
     "info": "Origin of cross-country skiing. Used for survival and travel in snowy regions.",
     "image": "photo.JPEG"
   },
@@ -13,7 +13,7 @@
     "lat": 60.1282,
     "lng": 18.6435,
     "era": "medieval",
-    "date": "1400-1700 AD",
+    "date": "1500 AD",
     "info": "Skiing spread as a common winter transportation method.",
     "image": "photo.JPEG"
   },
@@ -22,7 +22,7 @@
     "lat": 61.9241,
     "lng": 25.7482,
     "era": "medieval",
-    "date": "1600-1900 AD",
+    "date": "1750 AD",
     "info": "Used for long-distance travel and military movement in winter.",
     "image": "photo.JPEG"
   },
@@ -31,7 +31,7 @@
     "lat": 61.5240,
     "lng": 105.3188,
     "era": "modern",
-    "date": "1700-1950 AD",
+    "date": "1850 AD",
     "info": "Ski troops used skiing for mobility in harsh winter conditions.",
     "image": "photo.JPEG"
   },
@@ -40,7 +40,7 @@
     "lat": 37.0902,
     "lng": -95.7129,
     "era": "contemporary",
-    "date": "1900-Present",
+    "date": "1950 AD",
     "info": "Cross-country skiing became a competitive and Olympic sport.",
     "image": "photo.JPEG"
   },
@@ -49,7 +49,7 @@
     "lat": 64.9631,
     "lng": -19.0208,
     "era": "ancient",
-    "date": "1100-1300 AD",
+    "date": "1200 AD",
     "info": "Vikings used skiing for exploration and travel across snowy terrain.",
     "image": "photo.JPEG"
   },
@@ -58,7 +58,7 @@
     "lat": 64.2008,
     "lng": -149.4937,
     "era": "modern",
-    "date": "1800-Present",
+    "date": "1900 AD",
     "info": "Jack Leveque is pretty good at skiing.",
     "image": "photo.JPEG"
   }

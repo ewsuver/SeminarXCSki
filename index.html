@@ -393,10 +393,11 @@ function updateTimelineDisplay() {
   const pct = (currentYear - timelineMin) / (timelineMax - timelineMin);
   const left = pct * railRect.width;
   handle.style.left = `${left}px`;
-  label.textContent = `Selected year: ${currentYear}`;
 
   const rangeStartYear = clamp(currentYear - yearWindow, timelineMin, timelineMax);
   const rangeEndYear = clamp(currentYear + yearWindow, timelineMin, timelineMax);
+  label.textContent = `Selected range: ${rangeStartYear} — ${rangeEndYear}`;
+
   const rangeStartPct = (rangeStartYear - timelineMin) / (timelineMax - timelineMin);
   const rangeEndPct = (rangeEndYear - timelineMin) / (timelineMax - timelineMin);
 
