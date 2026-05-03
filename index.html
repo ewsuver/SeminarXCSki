@@ -35,19 +35,22 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background: rgba(255,255,255,0.97);
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 90%;
+      padding: 36px;
+      border-radius: 14px;
+      max-width: 880px;
+      width: 95%;
+      max-height: 85vh;
+      overflow-y: auto;
       display: none;
       z-index: 100;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.45);
     }
 
     #infoBox .content {
       display: flex;
-      gap: 30px;
+      gap: 36px;
       align-items: flex-start;
+      flex-wrap: wrap;
     }
 
     #infoBox .text-section {
@@ -79,10 +82,17 @@
     }
 
     #infoBox img {
-      width: 150px;
-      height: 150px;
+      width: 220px;
+      height: 220px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 10px;
+    }
+
+    #infoBox .popup-actions {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
     }
 
     #infoBox button {
@@ -110,45 +120,98 @@
       z-index: 50;
     }
 
-    /* Era buttons */
-    #eraContainer {
+    /* Timeline */
+    #timeline {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 80px;
-      background: rgba(0, 0, 0, 0.9);
+      height: 140px;
+      background: rgba(0, 0, 0, 0.95);
       border-top: 2px solid #fff;
       z-index: 8;
-      padding: 15px 20px;
-      box-sizing: border-box;
       display: flex;
-      justify-content: center;
-      gap: 15px;
+      flex-direction: column;
       align-items: center;
-      flex-wrap: wrap;
+      justify-content: center;
+      padding: 10px 20px;
+      box-sizing: border-box;
     }
 
-    .era-btn {
-      padding: 8px 20px;
-      background: rgba(100, 150, 255, 0.3);
+    .timeline-selected-year {
       color: white;
-      border: 2px solid rgba(100, 150, 255, 0.6);
-      border-radius: 6px;
-      cursor: pointer;
       font-size: 14px;
-      transition: all 0.3s ease;
+      margin-bottom: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
 
-    .era-btn:hover {
-      background: rgba(100, 150, 255, 0.5);
-      border-color: rgba(100, 150, 255, 1);
+    .timeline-rail {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      height: 12px;
+      border-radius: 6px;
+      background: rgba(100, 150, 255, 0.15);
+      cursor: pointer;
+      user-select: none;
     }
 
-    .era-btn.active {
-      background: rgba(100, 150, 255, 0.8);
-      border-color: #6496ff;
-      box-shadow: 0 0 10px rgba(100, 150, 255, 0.6);
+    .timeline-active-range {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 12px;
+      border-radius: 6px;
+      background: rgba(100, 150, 255, 0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .timeline-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #6496ff;
+      border: 3px solid #fff;
+      box-shadow: 0 0 14px rgba(100, 150, 255, 0.7);
+      cursor: grab;
+      z-index: 2;
+      transition: transform 0.15s ease;
+    }
+
+    .timeline-handle.dragging {
+      cursor: grabbing;
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    .timeline-markers {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      color: rgba(220, 220, 220, 0.9);
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .timeline-marker {
+      text-align: center;
+      width: 1px;
+    }
+
+    .timeline-marker:before {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 10px;
+      margin: 0 auto 6px;
+      background: rgba(180, 180, 180, 0.7);
     }
 
     /* Tooltip styles */
@@ -177,19 +240,30 @@
 <div id="infoBox"></div>
 <div id="overlay"></div>
 <div class="pin-tooltip" id="pinTooltip"></div>
-<div id="eraContainer">
-  <button class="era-btn active" onclick="filterByEra('ancient')">Ancient</button>
-  <button class="era-btn" onclick="filterByEra('medieval')">Medieval</button>
-  <button class="era-btn" onclick="filterByEra('modern')">Modern Era</button>
-  <button class="era-btn" onclick="filterByEra('contemporary')">Contemporary</button>
-  <button class="era-btn" onclick="filterByEra('all')">All Eras</button>
+<div id="timeline">
+  <div class="timeline-selected-year" id="selectedYearLabel">Selected year: 1500</div>
+  <div class="timeline-rail" id="timelineRail">
+    <div class="timeline-active-range" id="activeRange"></div>
+    <div class="timeline-handle" id="timelineHandle"></div>
+  </div>
+  <div class="timeline-markers">
+    <div class="timeline-marker">1000</div>
+    <div class="timeline-marker">1250</div>
+    <div class="timeline-marker">1500</div>
+    <div class="timeline-marker">1750</div>
+    <div class="timeline-marker">2000</div>
+    <div class="timeline-marker">2025</div>
+  </div>
 </div>
 
 <script>
 
 
-// Era state
-let currentEra = "ancient";
+// Timeline state
+const timelineMin = 1000;
+const timelineMax = 2025;
+const yearWindow = 250;
+let currentYear = 1500;
 let globeInstance;
 let locationElements = [];
 let locations = [];
@@ -198,7 +272,10 @@ let locations = [];
 fetch('locations.json')
   .then(response => response.json())
   .then(data => {
-    locations = data;
+    locations = data.map(loc => ({
+      ...loc,
+      yearRange: parseDateRange(loc.date)
+    }));
     initializeGlobe();
   });
 
@@ -235,11 +312,13 @@ function initializeGlobe() {
             <h2>${d.name}</h2>
             <div class="meta">${d.date}</div>
             <p>${d.info}</p>
-            <button onclick="closePopup()">Close</button>
           </div>
           <div class="image-section">
             <img src="${d.image}" alt="${d.name}">
           </div>
+        </div>
+        <div class="popup-actions">
+          <button onclick="closePopup()">Close</button>
         </div>
       `;
     });
@@ -273,37 +352,122 @@ function initializeGlobe() {
   globeInstance.controls().autoRotate = false;
   globeInstance.controls().autoRotateSpeed = 0.5;
 
-  // Initialize with ancient pins only
+  updateTimelineDisplay();
+
   setTimeout(() => {
     updatePinVisibility();
   }, 100);
 }
 
-function filterByEra(era) {
-  currentEra = era;
-  
-  // Update button states
-  document.querySelectorAll('.era-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.target.classList.add('active');
-  
+function parseDateRange(dateStr) {
+  if (!dateStr) {
+    return { start: timelineMin, end: timelineMax };
+  }
+
+  const normalized = dateStr
+    .replace(/\s*AD\s*$/i, '')
+    .replace(/Present/i, '2025')
+    .replace(/BCE/i, '-');
+
+  const parts = normalized.split('-').map(str => str.trim());
+  const start = parseInt(parts[0], 10);
+  const end = parts.length > 1 ? parseInt(parts[1], 10) : start;
+
+  return {
+    start: Number.isNaN(start) ? timelineMin : start,
+    end: Number.isNaN(end) ? timelineMax : end
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function updateTimelineDisplay() {
+  const rail = document.getElementById('timelineRail');
+  const handle = document.getElementById('timelineHandle');
+  const activeRange = document.getElementById('activeRange');
+  const label = document.getElementById('selectedYearLabel');
+
+  const railRect = rail.getBoundingClientRect();
+  const pct = (currentYear - timelineMin) / (timelineMax - timelineMin);
+  const left = pct * railRect.width;
+  handle.style.left = `${left}px`;
+
+  const rangeStartYear = clamp(currentYear - yearWindow, timelineMin, timelineMax);
+  const rangeEndYear = clamp(currentYear + yearWindow, timelineMin, timelineMax);
+  label.textContent = `Selected range: ${rangeStartYear} — ${rangeEndYear}`;
+
+  const rangeStartPct = (rangeStartYear - timelineMin) / (timelineMax - timelineMin);
+  const rangeEndPct = (rangeEndYear - timelineMin) / (timelineMax - timelineMin);
+
+  activeRange.style.left = `${rangeStartPct * railRect.width}px`;
+  activeRange.style.width = `${Math.max((rangeEndPct - rangeStartPct) * railRect.width, 0)}px`;
+}
+
+function setYearFromPosition(pageX) {
+  const rail = document.getElementById('timelineRail');
+  const rect = rail.getBoundingClientRect();
+  const x = clamp(pageX - rect.left, 0, rect.width);
+  const pct = x / rect.width;
+  const year = Math.round(timelineMin + pct * (timelineMax - timelineMin));
+  currentYear = clamp(year, timelineMin, timelineMax);
+  updateTimelineDisplay();
   updatePinVisibility();
 }
 
 function updatePinVisibility() {
   locationElements.forEach((el, index) => {
     const location = locations[index];
-    const isVisible = currentEra === "all" || location.era === currentEra;
+    const isVisible = location.yearRange.end >= currentYear - yearWindow && location.yearRange.start <= currentYear + yearWindow;
     if (isVisible) {
-      el.style.visibility = "visible";
-      el.style.pointerEvents = "auto";
+      el.style.visibility = 'visible';
+      el.style.pointerEvents = 'auto';
     } else {
-      el.style.visibility = "hidden";
-      el.style.pointerEvents = "none";
+      el.style.visibility = 'hidden';
+      el.style.pointerEvents = 'none';
     }
   });
 }
+
+const timelineRail = document.getElementById('timelineRail');
+const timelineHandle = document.getElementById('timelineHandle');
+let draggingTimeline = false;
+
+function startDrag(event) {
+  draggingTimeline = true;
+  timelineHandle.classList.add('dragging');
+  timelineHandle.setPointerCapture(event.pointerId);
+  setYearFromPosition(event.pageX);
+}
+
+function drag(event) {
+  if (!draggingTimeline) return;
+  setYearFromPosition(event.pageX);
+}
+
+function endDrag(event) {
+  if (!draggingTimeline) return;
+  draggingTimeline = false;
+  timelineHandle.classList.remove('dragging');
+  timelineHandle.releasePointerCapture(event.pointerId);
+}
+
+timelineRail.addEventListener('click', (event) => {
+  if (event.target === timelineHandle) return;
+  setYearFromPosition(event.pageX);
+});
+timelineHandle.addEventListener('pointerdown', startDrag);
+timelineHandle.addEventListener('pointermove', drag);
+timelineHandle.addEventListener('pointerup', endDrag);
+timelineHandle.addEventListener('pointercancel', endDrag);
+
+document.addEventListener('pointerup', () => {
+  if (draggingTimeline) {
+    draggingTimeline = false;
+    timelineHandle.classList.remove('dragging');
+  }
+});
 
 function closePopup() {
   document.getElementById("overlay").style.display = "none";
